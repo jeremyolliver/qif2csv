@@ -85,11 +85,11 @@ class Application
     panel.setPrompt("Save converted file")
     file_type = "csv"# @output_format.value
     panel.setAllowedFileTypes([file_type])
+    panel.
     result = panel.runModal
     if result == NSFileHandlingPanelOKButton
       f = File.new(panel.filename, "w+")
       @format = "csv" # TODO: don't set this here, but set it in an action triggered from the popup button
-      @converted_document = Converter.translate(@file, @format) # TODO: write this class
       f.write(@converted_document)
     end
     log("Finished writing file")
@@ -97,7 +97,7 @@ class Application
   
   def convert
     # TODO: implementation
-    @converted_document = ""
+    @converted_document = Converter.translate(@file, @format)
     write_file
   end
   
