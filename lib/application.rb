@@ -24,15 +24,15 @@ class Application
             end
           end
           # Formatting options
-          vert << layout_view(:frame => [0, 0, 0, 40], :mode => :horizontal, :layout => {:padding => 0, :margin => 0, :start => false, :expand => [:width]}) do |horiz|
-            # FIXME: turn into a PopupButton
-            horiz << @file_label = label(:text => "File: ", :layout => {:align => :left, :expand => [:width]})
-            # FIXME: turn into a checkbox ()
-            horiz << @windows_formatted = button(:title => "Format for windows", :layout => {:align => :left})
-          end
+          # vert << layout_view(:frame => [0, 0, 0, 40], :mode => :horizontal, :layout => {:padding => 0, :margin => 0, :start => false, :expand => [:width]}) do |horiz|
+          #   # FIXME: turn into a PopupButton
+          #   horiz << @output_format = label(:text => "File: ", :layout => {:align => :left, :expand => [:width]})
+          #   # FIXME: turn into a checkbox ()
+          #   horiz << @windows_formatted = button(:title => "Format for windows", :layout => {:align => :left})
+          # end
           # Output dialog and button
           vert << layout_view(:frame => [0, 0, 0, 40], :mode => :horizontal, :layout => {:padding => 0, :margin => 0, :start => false, :expand => [:width]}) do |horiz|
-            horiz << @feed_field = text_field(:layout => {:align => :left, :expand => [:width]})
+            horiz << @console = text_field(:layout => {:align => :left, :expand => [:width]})
             horiz << @convert_button = button(:title => "Convert", :layout => {:align => :right}) do |b|
               b.on_action { convert }
             end
@@ -44,6 +44,7 @@ class Application
   
   # file/open
   def on_open(menu)
+    load_file
   end
   
   # file/new 
@@ -68,11 +69,37 @@ class Application
   
   # When the open button is clicked
   def load_file
-    
+    panel = NSOpenPanel.new
+    panel.setCanChooseFiles(true)
+    panel.setCanChooseDirectories(false)
+    panel.runModalForTypes(["qif"])
+    @file = panel.filename
+    unless @file.nil?
+      @file_label.text = "File: #{@file}"
+    end
+    log("Loaded file: #{@file}")
+  end
+  
+  def write_file
+    panel = NSSavePanel.new
+    panel.setPrompt("Save converted file")
+    file_type = "csv"# @output_format.value
+    panel.setAllowedFileTypes([file_type])
+    result = panel.runModal
+    if result.is_a?(NSFileHandlingPanelOKButton)
+      f = File.new(panel.filename, "w+")
+      f.write(@converted_document)
+    end
+    log("Finished writing file")
   end
   
   def convert
     # TODO: implementation
+  end
+  
+  def log(msg)
+    puts msg
+    # @console.selectText += "\n#{msg}"
   end
   
 end
