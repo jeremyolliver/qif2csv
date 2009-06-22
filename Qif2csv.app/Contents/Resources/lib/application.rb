@@ -1,5 +1,7 @@
 require 'hotcocoa'
 
+require 'lib/converter'
+
 # Replace the following code with your own hotcocoa code
 
 class Application
@@ -80,25 +82,26 @@ class Application
     log("Loaded file: #{@file}")
   end
   
-  def write_file
+  # Choose where to save the output
+  def choose_output
     panel = NSSavePanel.new
     panel.setPrompt("Save converted file")
     file_type = "csv"# @output_format.value
     panel.setAllowedFileTypes([file_type])
     result = panel.runModal
     if result == NSFileHandlingPanelOKButton
-      f = File.new(panel.filename, "w+")
-      @format = "csv" # TODO: don't set this here, but set it in an action triggered from the popup button
-      @converted_document = Converter.translate(@file, @format) # TODO: write this class
-      f.write(@converted_document)
+      @output_file = panel.filename
+    else
+      nil
     end
-    log("Finished writing file")
   end
   
+  # First prompt for output file, then run conversion with file reading and writing
   def convert
     # TODO: implementation
-    @converted_document = ""
-    write_file
+    output_file = choose_output
+    return if output_file.nil?
+    Converter.translate(@file, output_file)
   end
   
   def log(msg)
