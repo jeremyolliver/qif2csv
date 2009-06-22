@@ -90,7 +90,7 @@ class Application
     panel.setAllowedFileTypes([file_type])
     panel.setExtensionHidden(false)
     panel.setCanSelectHiddenExtension(true)
-    result = panel.runModalForDirectory(nil, file:"#{@file[0...-4]}.csv")
+    result = panel.runModalForDirectory(nil, file:"#{File.basename(@file)[0...-4]}.csv")
     if result == NSFileHandlingPanelOKButton
       @output_file = panel.filename
     else
