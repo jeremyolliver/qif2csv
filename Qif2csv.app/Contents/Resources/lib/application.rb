@@ -1,8 +1,6 @@
 require 'hotcocoa'
-
+# Load converter class for App logic
 require 'lib/converter'
-
-# Replace the following code with your own hotcocoa code
 
 class Application
 
@@ -11,7 +9,7 @@ class Application
   def start
     application :name => "Qif2csv" do |app|
       app.delegate = self
-      window :size => [500, 500], :center => true, :title => "Qif2csv", :view => :nolayout do |win|
+      window :size => [500, 180], :center => true, :title => "Qif2csv", :view => :nolayout do |win|
         win.will_close { exit }
         
         # Window elements layout
@@ -32,9 +30,11 @@ class Application
           #   # FIXME: turn into a checkbox ()
           #   horiz << @windows_formatted = button(:title => "Format for windows", :layout => {:align => :left})
           # end
+          
           # Output dialog and button
           vert << layout_view(:frame => [0, 0, 0, 40], :mode => :horizontal, :layout => {:padding => 0, :margin => 0, :start => false, :expand => [:width]}) do |horiz|
-            horiz << @console = text_field(:layout => {:align => :left, :expand => [:width]})
+            # horiz << @console = text_field(:layout => {:align => :left, :expand => [:width]})
+            horiz << @logger = label(:text => "No file loaded", :layout => {:expand => [:width]})
             horiz << @convert_button = button(:title => "Convert", :layout => {:align => :right}) do |b|
               b.on_action { convert }
             end
@@ -78,8 +78,8 @@ class Application
     @file = panel.filename
     unless @file.nil?
       @file_label.text = "File: #{@file}"
+      log("File successfully loaded")
     end
-    log("Loaded file: #{@file}")
   end
   
   # Choose where to save the output
@@ -88,10 +88,13 @@ class Application
     panel.setPrompt("Save converted file")
     file_type = "csv"# @output_format.value
     panel.setAllowedFileTypes([file_type])
-    result = panel.runModal
+    panel.setExtensionHidden(false)
+    panel.setCanSelectHiddenExtension(true)
+    result = panel.runModalForDirectory(nil, file:"#{@file[0...-4]}.csv")
     if result == NSFileHandlingPanelOKButton
       @output_file = panel.filename
     else
+      log("Cancelled conversion")
       nil
     end
   end
@@ -102,11 +105,11 @@ class Application
     output_file = choose_output
     return if output_file.nil?
     Converter.translate(@file, output_file)
+    log("File conversion finished")
   end
   
   def log(msg)
-    puts msg
-    # @console.selectText += "\n#{msg}"
+    @logger.text = msg
   end
   
 end
