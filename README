@@ -3,12 +3,16 @@ Qif2csv
 
 Qif2csv is a tool for converting .qif files to .csv for Mac OS X
 qif files are commonly used by financial applications for exporting transactional data,
-I didn't find any free converters for mac, so I wrote one using HotCocoa
+I didn't find any free converters for mac, so I wrote one myself using HotCocoa
 
 Installation
 ============
-This application requires MacRuby to run. MacRuby is free from http://www.macruby.org/
-once that's installed, simply copy the .app bundled here to your Applications directory
+Simply copy Qif2csv.app into your applications folder and run it
+
+About
+=====
+This is written using MacRuby (http://www.macruby.org) 0.4 and HotCocoa. MacRuby is bundled as a framework inside the application,
+so you don't need to install it to run the application.
 
 Author
 ======
